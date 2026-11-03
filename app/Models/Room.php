@@ -14,6 +14,12 @@ class Room extends Model
 
     public function scopeOrderForDisplay($query)
     {
+        if ($query->getModel()->getConnection()->getDriverName() === 'pgsql') {
+            return $query
+                ->orderByRaw("CASE WHEN code ~ '^R-[0-9]+$' THEN CAST(SUBSTRING(code, 3) AS NUMERIC) ELSE 99999 END")
+                ->orderBy('code');
+        }
+
         if ($query->getModel()->getConnection()->getDriverName() === 'sqlite') {
             return $query
                 ->orderByRaw("CASE WHEN code GLOB 'R-[0-9]*' AND code NOT GLOB 'R-*[^0-9]*' THEN CAST(SUBSTR(code, 3) AS INTEGER) ELSE 99999 END")
