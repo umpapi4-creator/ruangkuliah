@@ -27,6 +27,9 @@ COPY Caddyfile /etc/frankenphp/Caddyfile
 
 ENV APP_ENV=production \
     APP_DEBUG=false \
-    LOG_CHANNEL=stderr
+    LOG_CHANNEL=stderr \
+    TRUSTED_PROXIES=* \
+    SESSION_DRIVER=cookie \
+    SESSION_SECURE_COOKIE=true
 
 CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]

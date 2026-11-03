@@ -93,7 +93,38 @@ Ubah bagian tersebut pada file `.env` bila username atau password MySQL berbeda.
 
 Segera ubah akun dan password demo sebelum aplikasi dipakai secara nyata.
 
-## Menjalankan pengujian
+### Deployment Vercel dengan Supabase
+
+Container menggunakan session cookie terenkripsi agar session tidak bergantung pada
+file lokal antar-instance. Tidak diperlukan tabel session atau migrasi tambahan.
+Konfigurasi proxy mengikuti header HTTPS dari ingress Vercel.
+
+Di Vercel, atur environment variables untuk environment deployment yang digunakan:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://ruangkuliah.vercel.app
+TRUSTED_PROXIES=*
+SESSION_DRIVER=cookie
+SESSION_SECURE_COOKIE=true
+DB_CONNECTION=pgsql
+DB_SSLMODE=require
+```
+
+Gunakan `APP_KEY` yang tetap dan sama untuk semua instance/deployment; jangan
+generate ulang setiap build. Pertahankan kredensial Supabase yang sudah berhasil
+terhubung. Hapus override `ASSET_URL` atau `SESSION_DOMAIN` yang menunjuk localhost,
+HTTP, atau domain lama; biarkan keduanya tidak disetel untuk domain deployment.
+Environment variables Vercel mengalahkan nilai default Dockerfile, jadi pastikan
+`SESSION_DRIVER` tidak masih diatur ke `file` atau `array`.
+
+Push perubahan ke GitHub, lalu redeploy setelah mengatur environment variables.
+Hapus cookie lama untuk domain aplikasi dan buka ulang `/login` melalui HTTPS.
+Periksa bahwa `/css/app.css` mengembalikan CSS dan action form login memakai HTTPS.
+Jangan menjalankan migrasi ulang hanya untuk memperbaiki CSS atau error 419 ini.
+
+## Menjalankan pengujian lokal
 
 ```bash
 php artisan test
